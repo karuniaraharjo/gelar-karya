@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --bg-base: #0B0B0F;
+  --bg-elevated: #16161C;
+  --border-subtle: #2A2A32;
+  --text-primary: #F5F5F7;
+  --text-secondary: #9A9AA5;
+  --accent-primary: #6C5CE7;
+  --danger: #FF5C5C;
+  --success: #2ED573;
+  --accent-gradient: linear-gradient(135deg, #6C5CE7, #00D9C0);
+}
+
+@theme inline {
+  --color-bg-base: var(--bg-base);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-border-subtle: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent-primary: var(--accent-primary);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  
+  /* Font fallbacks based on blueprint */
+  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Utilities for gradient text or backgrounds */
+@utility bg-accent-gradient {
+  background-image: var(--accent-gradient);
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
