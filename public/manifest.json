@@ -1,0 +1,23 @@
+{
+  "name": "KaryaFeed Gelar Karya",
+  "short_name": "KaryaFeed",
+  "description": "Platform Showcase Karya Mahasiswa Informatika",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0B0F",
+  "theme_color": "#0B0B0F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
