@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { createClient } from "@/lib/supabase/client";
+import { fetchFeedKarya } from "@/lib/api/karya";
 import { ReelsItem } from "./ReelsItem";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCategory } from "@/components/providers/CategoryProvider";
@@ -13,92 +14,30 @@ export function ReelsFeed() {
   const supabase = createClient();
   const { ref, inView } = useInView();
 
-  const fetchReels = async ({ pageParam }: { pageParam?: string }) => {
-    let query = supabase
-      .from("karya")
-      .select(`
-        id,
-        judul,
-        nama_mahasiswa,
-        created_at,
-        kategori:kategori_id(nama, slug),
-        karya_media(url, tipe, thumbnail_url, urutan)
-      `)
-      .eq("status", "published")
-      .order("created_at", { ascending: false })
-      .limit(5);
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [shuffledWorks, setShuffledWorks] = useState<any[]>([]);
 
-    if (activeCategory) {
-      query = query.eq("kategori.slug", activeCategory);
-    }
-
-    if (pageParam) {
-      query = query.lt("created_at", pageParam);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    const processedData = data.map((item: any) => {
-      // For reels, we want to play videos if possible, or show images.
-      // If there's a video, prefer the first video. Otherwise first media.
-      const sortedMedia = item.karya_media?.sort((a: any, b: any) => a.urutan - b.urutan) || [];
-      let primaryMedia = sortedMedia.find((m: any) => m.tipe === "video");
-      if (!primaryMedia) {
-        primaryMedia = sortedMedia[0];
-      }
-      
-      const defaultMedia = {
-        url: "https://placehold.co/600x900/16161C/9A9AA5.webp?text=No+Media",
-        tipe: "image",
-      };
-
-      return {
-        id: item.id,
-        judul: item.judul,
-        namaMahasiswa: item.nama_mahasiswa,
-        kategori: item.kategori?.nama || "Kategori",
-        media: primaryMedia ? {
-          url: primaryMedia.url,
-          tipe: primaryMedia.tipe,
-          thumbnail_url: primaryMedia.thumbnail_url,
-        } : defaultMedia,
-        createdAt: item.created_at,
-      };
-    });
-
-    if (activeCategory) {
-      return processedData.filter((item) => item.kategori !== "Kategori" && item.kategori != null);
-    }
-
-    return processedData;
-  };
-
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["karya", "reels", activeCategory],
-    queryFn: fetchReels,
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || lastPage.length === 0) return undefined;
-      return lastPage[lastPage.length - 1].createdAt;
-    },
+  const { data, status, error } = useQuery({
+    queryKey: ["karya", "feed", activeCategory],
+    queryFn: () => fetchFeedKarya(supabase as any, { activeCategory }),
   });
 
+  // Shuffle data once when loaded
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    if (data && data.length > 0) {
+      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      setShuffledWorks(shuffled);
+    } else {
+      setShuffledWorks([]);
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [data]);
+
+  // Infinite loop logic
+  useEffect(() => {
+    if (inView && shuffledWorks.length > 0) {
+      setVisibleCount((prev) => prev + 5);
+    }
+  }, [inView, shuffledWorks.length]);
 
   if (status === "pending") {
     return (
@@ -119,9 +58,7 @@ export function ReelsFeed() {
     );
   }
 
-  const allReels = data.pages.flat();
-
-  if (allReels.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="w-full h-[calc(100dvh-176px)] bg-black flex flex-col items-center justify-center p-8 text-center">
         <div className="w-24 h-24 mb-4 opacity-20 text-text-secondary">
@@ -137,12 +74,16 @@ export function ReelsFeed() {
     );
   }
 
+  const displayItems = Array.from({ length: visibleCount }).map((_, i) => {
+    return shuffledWorks[i % shuffledWorks.length];
+  }).filter(Boolean);
+
   return (
     // The container is exactly the available height and hides scrollbars
     <div className="w-full h-[calc(100dvh-176px)] overflow-y-scroll snap-y snap-mandatory bg-black [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      {allReels.map((item) => (
+      {displayItems.map((item, index) => (
         <ReelsItem
-          key={item.id}
+          key={`${item.id}-${index}`}
           id={item.id}
           judul={item.judul}
           namaMahasiswa={item.namaMahasiswa}
@@ -151,18 +92,14 @@ export function ReelsFeed() {
       ))}
       
       {/* Infinite Scroll trigger element */}
-      <div 
-        ref={ref} 
-        className="w-full h-32 snap-center flex items-center justify-center bg-black shrink-0"
-      >
-        {isFetchingNextPage ? (
+      {shuffledWorks.length > 0 && (
+        <div 
+          ref={ref} 
+          className="w-full h-32 snap-center flex items-center justify-center bg-black shrink-0"
+        >
           <div className="w-8 h-8 border-2 border-text-secondary border-t-transparent rounded-full animate-spin" />
-        ) : hasNextPage ? (
-          <div className="text-text-secondary text-sm">Scroll untuk memuat...</div>
-        ) : (
-          <div className="text-text-secondary text-sm">Sudah menampilkan semua reels</div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

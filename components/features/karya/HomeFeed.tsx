@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { createClient } from "@/lib/supabase/client";
 import { fetchFeedKarya } from "@/lib/api/karya";
@@ -13,34 +13,31 @@ export function HomeFeed() {
   const { activeCategory } = useCategory();
   const supabase = createClient();
   const { ref, inView } = useInView();
+  
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [shuffledWorks, setShuffledWorks] = useState<any[]>([]);
 
-  const fetchKarya = async ({ pageParam }: { pageParam?: string }) => {
-    return fetchFeedKarya(supabase as any, { pageParam, activeCategory });
-  };
-
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
+  const { data, status, error } = useQuery({
     queryKey: ["karya", "feed", activeCategory],
-    queryFn: fetchKarya,
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || lastPage.length === 0) return undefined;
-      return lastPage[lastPage.length - 1].createdAt;
-    },
+    queryFn: () => fetchFeedKarya(supabase as any, { activeCategory }),
   });
 
+  // Shuffle data once when loaded
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    if (data && data.length > 0) {
+      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      setShuffledWorks(shuffled);
+    } else {
+      setShuffledWorks([]);
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [data]);
+
+  // Infinite loop logic
+  useEffect(() => {
+    if (inView && shuffledWorks.length > 0) {
+      setVisibleCount((prev) => prev + 5);
+    }
+  }, [inView, shuffledWorks.length]);
 
   if (status === "pending") {
     return (
@@ -59,9 +56,7 @@ export function HomeFeed() {
     );
   }
 
-  const allKarya = data.pages.flat();
-
-  if (allKarya.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center min-h-[50vh]">
         <div className="w-24 h-24 mb-4 opacity-20 text-text-secondary">
@@ -77,31 +72,34 @@ export function HomeFeed() {
     );
   }
 
+  // To support infinite scroll loop, we generate items up to visibleCount
+  // by looping over shuffledWorks
+  const displayItems = Array.from({ length: visibleCount }).map((_, i) => {
+    return shuffledWorks[i % shuffledWorks.length];
+  }).filter(Boolean); // filter out undefined during initial render before shuffle
+
   return (
     <div className="flex flex-col gap-6 w-full max-w-lg mx-auto pb-8">
-      {allKarya.map((item) => (
+      {displayItems.map((item, index) => (
         <KaryaCard
-          key={item.id}
+          key={`${item.id}-${index}`}
           id={item.id}
           judul={item.judul}
           namaMahasiswa={item.namaMahasiswa}
           prodi={item.prodi}
           kategori={item.kategori}
           thumbnailUrl={item.thumbnailUrl}
+          media={item.media}
           viewCount={item.viewCount}
         />
       ))}
       
       {/* Infinite Scroll trigger element */}
-      <div ref={ref} className="h-10 flex items-center justify-center">
-        {isFetchingNextPage ? (
+      {shuffledWorks.length > 0 && (
+        <div ref={ref} className="h-10 flex items-center justify-center">
           <Skeleton variant="line" width="60%" className="mx-auto" />
-        ) : hasNextPage ? (
-          <div className="text-text-secondary text-sm">Memuat lagi...</div>
-        ) : (
-          <div className="text-text-secondary text-sm">Sudah menampilkan semua karya</div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

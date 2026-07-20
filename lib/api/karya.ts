@@ -19,7 +19,7 @@ export const fetchFeedKarya = async (
     `)
     .eq("status", "published")
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(100);
 
   if (activeCategory) {
     // Note: this assumes inner join if possible, but PostgREST filter on nested needs caution.
@@ -37,7 +37,8 @@ export const fetchFeedKarya = async (
   }
 
   const processedData = data.map((item: any) => {
-    const firstMedia = item.karya_media?.sort((a: any, b: any) => a.urutan - b.urutan)[0];
+    const sortedMedia = item.karya_media?.sort((a: any, b: any) => a.urutan - b.urutan) || [];
+    const firstMedia = sortedMedia[0];
     const thumbnailUrl = firstMedia?.tipe === "video" ? firstMedia.thumbnail_url : firstMedia?.url;
     
     return {
@@ -47,6 +48,11 @@ export const fetchFeedKarya = async (
       prodi: item.prodi,
       kategori: item.kategori?.nama || "Kategori",
       thumbnailUrl: thumbnailUrl || "https://placehold.co/600x400/16161C/9A9AA5.webp?text=No+Image",
+      media: sortedMedia.map((m: any) => ({
+        url: m.url,
+        tipe: m.tipe,
+        thumbnailUrl: m.thumbnail_url
+      })),
       viewCount: item.view_count || 0,
       createdAt: item.created_at,
     };
@@ -73,7 +79,7 @@ export const fetchExploreKarya = async (
     `)
     .eq("status", "published")
     .order("created_at", { ascending: false })
-    .limit(30);
+    .limit(100);
 
   if (pageParam) {
     query = query.lt("created_at", pageParam);
@@ -92,7 +98,9 @@ export const fetchExploreKarya = async (
     
     return {
       id: item.id,
-      thumbnailUrl: thumbnailUrl || "https://placehold.co/300x300/16161C/9A9AA5.webp?text=No+Image",
+      thumbnailUrl: thumbnailUrl || (primaryMedia?.tipe === "video" ? primaryMedia.url : "https://placehold.co/300x300/16161C/9A9AA5.webp?text=No+Image"),
+      tipe: primaryMedia?.tipe || "image",
+      videoUrl: primaryMedia?.tipe === "video" ? primaryMedia.url : null,
       kategori: item.kategori,
       createdAt: item.created_at,
     };

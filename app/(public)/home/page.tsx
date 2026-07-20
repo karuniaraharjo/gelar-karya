@@ -9,10 +9,9 @@ export default async function HomePage() {
   const queryClient = new QueryClient();
   const supabase = await createClient();
 
-  await queryClient.prefetchInfiniteQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["karya", "feed", null],
     queryFn: () => fetchFeedKarya(supabase as any, { activeCategory: null }),
-    initialPageParam: undefined as string | undefined,
   });
 
   return (

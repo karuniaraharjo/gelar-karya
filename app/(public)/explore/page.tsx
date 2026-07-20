@@ -9,10 +9,9 @@ export default async function ExplorePage() {
   const queryClient = new QueryClient();
   const supabase = await createClient();
 
-  await queryClient.prefetchInfiniteQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["karya", "explore", "all"],
     queryFn: () => fetchExploreKarya(supabase as any, {}),
-    initialPageParam: undefined as string | undefined,
   });
 
   return (
