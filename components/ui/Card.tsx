@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils/cn";
-import type { HTMLAttributes, ReactNode } from "react";
+import React, { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /** Content inside the card */
@@ -17,15 +17,16 @@ const paddingClasses: Record<NonNullable<CardProps["padding"]>, string> = {
   lg: "p-6",
 };
 
-export function Card({
+export const Card = forwardRef<HTMLDivElement, CardProps>(({
   children,
   padding = "md",
   hoverable = false,
   className,
   ...rest
-}: CardProps) {
+}, ref) => {
   return (
     <div
+      ref={ref}
       className={cn(
         "bg-bg-elevated border border-border-subtle",
         "rounded-[var(--radius-lg)] overflow-hidden",
@@ -39,4 +40,5 @@ export function Card({
       {children}
     </div>
   );
-}
+});
+Card.displayName = "Card";
