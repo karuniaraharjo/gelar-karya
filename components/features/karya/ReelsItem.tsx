@@ -74,7 +74,7 @@ export function ReelsItem({ id, judul, namaMahasiswa, media }: ReelsItemProps) {
   return (
     <div
       ref={ref}
-      className="relative w-full h-[calc(100dvh-176px)] snap-center bg-black flex items-center justify-center overflow-hidden shrink-0"
+      className="relative w-full h-[calc(100dvh-176px)] snap-center snap-always bg-black flex items-center justify-center overflow-hidden shrink-0"
     >
       {hasMounted ? (
         <>
@@ -84,7 +84,7 @@ export function ReelsItem({ id, judul, namaMahasiswa, media }: ReelsItemProps) {
             onClick={togglePlay}
           >
             {media.map((item, index) => (
-              <div key={index} className="relative w-full h-full shrink-0 snap-center">
+              <div key={index} className="relative w-full h-full shrink-0 snap-center snap-always">
                 {item.tipe === "video" ? (
                   <>
                     <video

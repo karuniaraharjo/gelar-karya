@@ -37,7 +37,7 @@ export function MediaCarousel({ media }: { media: Media[] }) {
         onScroll={handleScroll}
       >
         {media.map((item, idx) => (
-          <div key={item.id} className="w-full h-full shrink-0 snap-center relative bg-black">
+          <div key={item.id} className="w-full h-full shrink-0 snap-center snap-always relative bg-black">
             {item.tipe === "video" ? (
               <video
                 src={item.url}

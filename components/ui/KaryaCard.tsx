@@ -74,7 +74,7 @@ export function KaryaCard({
               onScroll={handleScroll}
             >
               {media.map((item, index) => (
-                <div key={index} className="relative w-full h-full shrink-0 snap-center">
+                <div key={index} className="relative w-full h-full shrink-0 snap-center snap-always">
                   {item.tipe === "video" ? (
                     <video
                       ref={(el) => { videoRefs.current[index] = el; }}
