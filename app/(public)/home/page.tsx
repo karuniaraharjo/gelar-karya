@@ -15,7 +15,7 @@ export default async function HomePage() {
   });
 
   return (
-    <div className="p-4 pt-6">
+    <div className="w-full pt-6">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <HomeFeed />
       </HydrationBoundary>

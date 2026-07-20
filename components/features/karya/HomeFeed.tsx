@@ -79,7 +79,7 @@ export function HomeFeed() {
   }).filter(Boolean); // filter out undefined during initial render before shuffle
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-lg mx-auto pb-8">
+    <div className="flex flex-col gap-0 w-full md:max-w-lg mx-auto pb-8">
       {displayItems.map((item, index) => (
         <KaryaCard
           key={`${item.id}-${index}`}
@@ -96,7 +96,7 @@ export function HomeFeed() {
       
       {/* Infinite Scroll trigger element */}
       {shuffledWorks.length > 0 && (
-        <div ref={ref} className="h-10 flex items-center justify-center">
+        <div ref={ref} className="h-10 flex items-center justify-center mt-6">
           <Skeleton variant="line" width="60%" className="mx-auto" />
         </div>
       )}

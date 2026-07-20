@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CategoryProvider } from "@/components/providers/CategoryProvider";
 import { TopNavigation } from "@/components/layout/TopNavigation";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
+import { SwipeNavigation } from "@/components/layout/SwipeNavigation";
 
 export default async function PublicLayout({
   children,
@@ -34,11 +35,14 @@ export default async function PublicLayout({
 
   return (
     <CategoryProvider>
-      <div className="min-h-screen bg-bg-base text-text-primary pb-20 pt-24">
+      <div className="min-h-screen bg-bg-base text-text-primary flex flex-col">
         <TopNavigation categories={cleanCategories} />
-        <main className="container mx-auto">{children}</main>
+        <SwipeNavigation>
+          {children}
+        </SwipeNavigation>
         <BottomNavigation />
       </div>
     </CategoryProvider>
   );
 }
+

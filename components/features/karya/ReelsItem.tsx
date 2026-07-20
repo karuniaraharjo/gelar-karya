@@ -74,7 +74,7 @@ export function ReelsItem({ id, judul, namaMahasiswa, media }: ReelsItemProps) {
   return (
     <div
       ref={ref}
-      className="relative w-full h-[calc(100dvh-176px)] snap-center snap-always bg-black flex items-center justify-center overflow-hidden shrink-0"
+      className="relative w-full h-[calc(100dvh-80px)] snap-center snap-always bg-black flex items-center justify-center overflow-hidden shrink-0"
     >
       {hasMounted ? (
         <>

@@ -70,7 +70,7 @@ export function KaryaCard({
         return (
           <>
             <div 
-              className="flex overflow-x-auto snap-x snap-mandatory w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              className="flex overflow-x-auto snap-x snap-mandatory w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] no-swipe"
               onScroll={handleScroll}
             >
               {media.map((item, index) => (
@@ -80,7 +80,7 @@ export function KaryaCard({
                       ref={(el) => { videoRefs.current[index] = el; }}
                       src={item.url}
                       poster={item.thumbnailUrl || thumbnailUrl}
-                      className="object-cover w-full h-full"
+                      className="w-full h-auto"
                       controls
                       preload="auto"
                       playsInline
@@ -89,13 +89,15 @@ export function KaryaCard({
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <Link href={`/karya/${id}`} className="block relative w-full h-full">
+                    <Link href={`/karya/${id}`} className="block relative w-full">
                       <Image
                         src={item.url || thumbnailUrl}
                         alt={`${judul} - Media ${index + 1}`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover"
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        style={{ width: '100%', height: 'auto' }}
+                        className="w-full h-auto object-cover"
                       />
                     </Link>
                   )}
@@ -124,7 +126,7 @@ export function KaryaCard({
             ref={(el) => { videoRefs.current[0] = el; }}
             src={singleMedia.url}
             poster={singleMedia.thumbnailUrl || thumbnailUrl}
-            className="object-cover w-full h-full"
+            className="w-full h-auto"
             controls
             preload="auto"
             playsInline
@@ -136,13 +138,15 @@ export function KaryaCard({
       }
       
       return (
-        <Link href={`/karya/${id}`} className="block relative w-full h-full">
+        <Link href={`/karya/${id}`} className="block relative w-full">
           <Image
             src={singleMedia.url || thumbnailUrl}
             alt={`Thumbnail untuk ${judul}`}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: '100%', height: 'auto' }}
+            className="w-full h-auto object-cover"
           />
         </Link>
       );
@@ -150,21 +154,23 @@ export function KaryaCard({
 
     // Fallback to original thumbnailUrl if no media array is provided
     return (
-      <Link href={`/karya/${id}`} className="block relative w-full h-full">
+      <Link href={`/karya/${id}`} className="block relative w-full">
         <Image
           src={thumbnailUrl}
           alt={`Thumbnail untuk ${judul}`}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: '100%', height: 'auto' }}
+          className="w-full h-auto object-cover"
         />
       </Link>
     );
   };
 
   return (
-    <Card hoverable padding="none" className="overflow-hidden bg-bg-elevated border-border-subtle" ref={ref}>
-      <div className="relative w-full aspect-[4/3] bg-bg-base">
+    <div className="flex flex-col bg-bg-base overflow-hidden" ref={ref}>
+      <div className="relative w-full bg-bg-base">
         {renderMedia()}
       </div>
       <Link href={`/karya/${id}`} className="block p-4">
@@ -187,6 +193,6 @@ export function KaryaCard({
           <span>{viewCount} tayangan</span>
         </div>
       </Link>
-    </Card>
+    </div>
   );
 }

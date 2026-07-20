@@ -33,7 +33,7 @@ export function MediaCarousel({ media }: { media: Media[] }) {
   return (
     <div className="relative w-full h-full">
       <div 
-        className="w-full h-full flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="w-full h-full flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] no-swipe"
         onScroll={handleScroll}
       >
         {media.map((item, idx) => (

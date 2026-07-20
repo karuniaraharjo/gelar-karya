@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { CategoryCircle } from "@/components/ui/CategoryCircle";
 import { useCategory } from "@/components/providers/CategoryProvider";
 
@@ -13,6 +14,11 @@ type CategoryData = {
 
 export function TopNavigation({ categories }: { categories: CategoryData[] }) {
   const { activeCategory, setActiveCategory } = useCategory();
+  const pathname = usePathname();
+
+  if (pathname === "/reels") {
+    return null;
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-bg-base/80 backdrop-blur-md border-b border-border-subtle">

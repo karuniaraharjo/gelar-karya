@@ -41,7 +41,7 @@ export function ReelsFeed() {
 
   if (status === "pending") {
     return (
-      <div className="w-full h-[calc(100dvh-176px)] bg-black flex items-center justify-center">
+      <div className="w-full h-[calc(100dvh-80px)] bg-black flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-12 h-12 border-4 border-accent-primary border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-text-secondary text-sm">Memuat Reels...</p>
@@ -52,7 +52,7 @@ export function ReelsFeed() {
 
   if (status === "error") {
     return (
-      <div className="w-full h-[calc(100dvh-176px)] bg-black flex flex-col items-center justify-center p-8 text-center text-danger">
+      <div className="w-full h-[calc(100dvh-80px)] bg-black flex flex-col items-center justify-center p-8 text-center text-danger">
         <p>Gagal memuat reels: {(error as Error).message}</p>
       </div>
     );
@@ -60,7 +60,7 @@ export function ReelsFeed() {
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-[calc(100dvh-176px)] bg-black flex flex-col items-center justify-center p-8 text-center">
+      <div className="w-full h-[calc(100dvh-80px)] bg-black flex flex-col items-center justify-center p-8 text-center">
         <div className="w-24 h-24 mb-4 opacity-20 text-text-secondary">
           <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4zM15 16H5V8h10v8z"/></svg>
         </div>
@@ -80,7 +80,7 @@ export function ReelsFeed() {
 
   return (
     // The container is exactly the available height and hides scrollbars
-    <div className="w-full h-[calc(100dvh-176px)] overflow-y-scroll snap-y snap-mandatory bg-black [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="w-full h-[calc(100dvh-80px)] overflow-y-scroll snap-y snap-mandatory bg-black [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {displayItems.map((item, index) => (
         <ReelsItem
           key={`${item.id}-${index}`}
