@@ -91,7 +91,7 @@ export function ReelsItem({ id, judul, namaMahasiswa, media }: ReelsItemProps) {
                       ref={(el) => { videoRefs.current[index] = el; }}
                       src={item.url}
                       poster={item.thumbnailUrl}
-                      className="absolute inset-0 w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-contain"
                       loop
                       playsInline
                       muted={isMuted}
@@ -111,7 +111,7 @@ export function ReelsItem({ id, judul, namaMahasiswa, media }: ReelsItemProps) {
                     alt={`${judul} - Media ${index + 1}`}
                     fill
                     sizes="100vw"
-                    className="object-cover"
+                    className="object-contain"
                     priority={inView && index === 0}
                   />
                 )}
